@@ -226,6 +226,7 @@ app.use((req, res, next) => {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
+app.use(require('./sync_bridge'));
 
 const messageCache = new Map();
 const msgRetryCounterCache = new Map();
