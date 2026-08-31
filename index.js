@@ -226,8 +226,32 @@ app.use((req, res, next) => {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
-app.use(require('./sync_bridge'));
+// 🚀 Google Sheet Bridge Route
+app.post('/sync-to-sheet', async (req, res) => {
+    try {
+        const payload = req.body || {};
+        if (Object.keys(payload).length === 0) {
+            return res.status(400).json({ status: "ERROR", message: "No data received" });
+        }
 
+        const response = await axios.post(GOOGLE_SCRIPT_URL, payload, {
+            headers: { "Content-Type": "application/json" },
+            timeout: 15000
+        });
+
+        return res.status(200).json({
+            status: "SUCCESS",
+            message: "Synced to Google Sheet via Railway",
+            data: response.data
+        });
+    } catch (error) {
+        console.error("❌ Sync Error:", error.message);
+        return res.status(500).json({
+            status: "ERROR",
+            message: error.message
+        });
+    }
+});
 const messageCache = new Map();
 const msgRetryCounterCache = new Map();
 
