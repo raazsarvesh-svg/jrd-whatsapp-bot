@@ -1637,13 +1637,15 @@ app.post('/send-attendance', async (req, res) => {
                 messageText = `🏫 *J.R.D. PUBLIC SCHOOL, मरुई*\n📅 *दिनांक:* ${todayStr}\n━━━━━━━━━━━━━━━━━━━━━━━\n✅ *उपस्थिति सूचना (PRESENT)*\n\nआदरणीय *${name}* जी,\nआज विद्यालय में आपकी उपस्थिति (**PRESENT**) दर्ज कर ली गई है।\n\n💭 *आज का विचार:*\n_"${todayInQuote}"_\n━━━━━━━━━━━━━━━━━━━━━━━\n– JRD Management`;
                 voiceScriptText = `नमस्ते! आदरणीय ${name} जी, जे आर डी पब्लिक स्कूल मरुई में आज आपकी उपस्थिति सफलतापूर्वक दर्ज कर ली गई है। ${todayInQuote} धन्यवाद!`;
             }
-        } else {
-// 🎓 छात्र उपस्थिति, अनुपस्थिति एवं अवकाश संदेश इंजन
-            const cleanSt = status.toLowerCase();
-            const isAbsent = cleanSt === 'absent' || cleanSt === 'a' || cleanSt === 'अनुपस्थित';
-            const isLeave  = cleanSt === 'leave' || cleanSt === 'l' || cleanSt === 'अवकाश';
+       } else {
+            // 🎯 1. स्टेटस को साफ-सुथरा ट्रिम करना (ताकि स्पेस की वजह से फेल न हो)
+            const cleanSt = String(status || '').trim().toLowerCase();
             
-            // क्लास से फालतू शब्द साफ करना (ताकि "कक्षा: Class 9" जैसी पुनरावृत्ति न हो)
+            // 🎯 2. लीव और एब्सेंट की पक्की पहचान
+            const isLeave  = (cleanSt === 'leave' || cleanSt === 'l' || cleanSt.indexOf('अवकाश') !== -1 || cleanSt.indexOf('leave') !== -1);
+            const isAbsent = !isLeave && (cleanSt === 'absent' || cleanSt === 'a' || cleanSt.indexOf('अनुपस्थित') !== -1);
+
+            // क्लास से फालतू शब्द साफ करना
             const cleanClass = String(className || '')
                 .replace(/class/gi, '')
                 .replace(/कक्षा/gi, '')
@@ -1651,11 +1653,33 @@ app.post('/send-attendance', async (req, res) => {
                 .trim() || className;
 
             const todayStudentQuote = (typeof studentQuotes !== 'undefined' && studentQuotes[dayOfMonth]) ? studentQuotes[dayOfMonth] : "परिश्रम ही सफलता की असली कुंजी है।";
-            const todayAbsentQuote = (typeof absentQuotes !== 'undefined' && absentQuotes[dayOfMonth]) ? absentQuotes[dayOfMonth] : "नियमितता ही सफलता की नींव है, एक भी दिन का अभाव प्रगति को धीमा कर देता है।";
-            const todayLeaveQuote = (typeof leaveQuotes !== 'undefined' && leaveQuotes[dayOfMonth]) ? leaveQuotes[dayOfMonth] : "स्वास्थ्य और विश्राम भी जीवन की ऊर्जा को बनाए रखने के लिए आवश्यक है।";
+            const todayAbsentQuote  = (typeof absentQuotes !== 'undefined' && absentQuotes[dayOfMonth]) ? absentQuotes[dayOfMonth] : "नियमितता ही सफलता की नींव है।";
+            const todayLeaveQuote   = (typeof leaveQuotes !== 'undefined' && leaveQuotes[dayOfMonth]) ? leaveQuotes[dayOfMonth] : "स्वास्थ्य और विश्राम भी जीवन की ऊर्जा को बनाए रखने के लिए आवश्यक है।";
 
-            if (isAbsent) {
-                // 🔴 अनुपस्थित (ABSENT)
+            if (isLeave) {
+                // 🏖️ 1. LEAVE TEXT (टेक्स्ट में पूरा विचार जाएगा)
+                messageText = `🏫 *J.R.D. PUBLIC SCHOOL, मरुई*\n` +
+                              `📅 *दिनांक:* ${todayStr}\n` +
+                              `━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                              `🏖️ *दैनिक अवकाश सूचना (LEAVE)*\n\n` +
+                              `आदरणीय अभिभावक जी,\n` +
+                              `सादर प्रणाम।\n\n` +
+                              `आपको सादर सूचित किया जाता है कि आपके प्रिय पाल्य:\n\n` +
+                              `👤 *विद्यार्थी:* *${name}*\n` +
+                              `📚 *कक्षा:* ${cleanClass}\n` +
+                              `📊 *स्थिति:* स्वीकृत अवकाश (LEAVE) 🏖️\n\n` +
+                              `का आज का अवकाश प्रार्थना-पत्र विद्यालय रिकॉर्ड में दर्ज/स्वीकृत कर लिया गया है।\n\n` +
+                              `📖 *आज का विचार:*\n` +
+                              `_"${todayLeaveQuote}"_\n\n` +
+                              `👉 _कृपया अवकाश अवधि में भी बच्चे के नियमित स्वाध्याय एवं गृहकार्य पर विशेष ध्यान दें।_\n` +
+                              `━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                              `– JRD Management`;
+
+                // 🎙️ 2. LEAVE VOICE (बिना भारी कोटेशन के साफ़ और डायरेक्ट स्क्रिप्ट - कभी फेल नहीं होगी)
+                voiceScriptText = `नमस्ते! आदरणीय अभिभावक जी, सादर प्रणाम। जे आर डी पब्लिक स्कूल मरुई द्वारा सूचित किया जाता है कि आपके प्रिय पाल्य ${name}, कक्षा ${cleanClass}, का आज का अवकाश विद्यालय रिकॉर्ड में स्वीकृत कर लिया गया है। कृपया घर पर बच्चे के स्वाध्याय पर ध्यान दें। धन्यवाद!`;
+
+            } else if (isAbsent) {
+                // 🔴 ABSENT TEXT
                 messageText = `🏫 *J.R.D. PUBLIC SCHOOL, मरुई*\n` +
                               `📅 *दिनांक:* ${todayStr}\n` +
                               `━━━━━━━━━━━━━━━━━━━━━━━\n` +
@@ -1674,31 +1698,11 @@ app.post('/send-attendance', async (req, res) => {
                               `━━━━━━━━━━━━━━━━━━━━━━━\n` +
                               `– JRD Management`;
 
-                voiceScriptText = `आदरणीय अभिभावक जी, सादर प्रणाम। जे आर डी पब्लिक स्कूल से सूचित किया जाता है कि आपके प्रिय पाल्य ${name}, कक्षा ${cleanClass}, आज विद्यालय में अनुपस्थित हैं। आज का अनुशासन विचार: ${todayAbsentQuote}। कृपया विद्यालय न आने का उचित कारण सूचित करने का कष्ट करें। धन्यवाद!`;
-
-            } else if (isLeave) {
-                // 🏖️ अवकाश (LEAVE) 
-                messageText = `🏫 *J.R.D. PUBLIC SCHOOL, मरुई*\n` +
-                              `📅 *दिनांक:* ${todayStr}\n` +
-                              `━━━━━━━━━━━━━━━━━━━━━━━\n` +
-                              `🏖️ *दैनिक अवकाश सूचना (LEAVE)*\n\n` +
-                              `आदरणीय अभिभावक जी,\n` +
-                              `सादर प्रणाम।\n\n` +
-                              `आपको सादर सूचित किया जाता है कि आपके प्रिय पाल्य:\n\n` +
-                              `👤 *विद्यार्थी:* *${name}*\n` +
-                              `📚 *कक्षा:* ${cleanClass}\n` +
-                              `📊 *स्थिति:* स्वीकृत अवकाश (LEAVE) 🏖️\n\n` +
-                              `का आज का अवकाश प्रार्थना-पत्र विद्यालय रिकॉर्ड में दर्ज/स्वीकृत कर लिया गया है।\n\n` +
-                              `📖 *आज का विचार:*\n` +
-                              `_"${todayLeaveQuote}"_\n\n` +
-                              `👉 _कृपया अवकाश अवधि में भी बच्चे के नियमित स्वाध्याय एवं गृहकार्य पर विशेष ध्यान दें।_\n` +
-                              `━━━━━━━━━━━━━━━━━━━━━━━\n` +
-                              `– JRD Management`;
-
-                voiceScriptText = `आदरणीय अभिभावक जी, सादर प्रणाम। जे आर डी पब्लिक स्कूल मरुई द्वारा सूचित किया जाता है कि आपके प्रिय पाल्य ${name}, कक्षा ${cleanClass}, का आज का अवकाश विद्यालय रिकॉर्ड में दर्ज कर लिया गया है। आज का विचार: ${todayLeaveQuote}। कृपया अवकाश अवधि में भी बच्चे के स्वाध्याय पर ध्यान दें। धन्यवाद!`;
+                // 🎙️ ABSENT VOICE
+                voiceScriptText = `नमस्ते! आदरणीय अभिभावक जी, सादर प्रणाम। जे आर डी पब्लिक स्कूल मरुई द्वारा सूचित किया जाता है कि आपके प्रिय पाल्य ${name}, कक्षा ${cleanClass}, आज विद्यालय में अनुपस्थित हैं। कृपया अनुपस्थिति का कारण विद्यालय कार्यालय में सूचित करें। धन्यवाद!`;
 
             } else {
-                // 🟢 उपस्थित (PRESENT)
+                // 🟢 PRESENT TEXT & VOICE
                 messageText = `🏫 *J.R.D. PUBLIC SCHOOL, मरुई*\n` +
                               `📅 *दिनांक:* ${todayStr}\n` +
                               `━━━━━━━━━━━━━━━━━━━━━━━\n` +
