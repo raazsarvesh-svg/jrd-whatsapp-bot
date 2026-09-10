@@ -168,6 +168,40 @@ const absentQuotes = {
     30: "सफलता उन्हीं को मिलती है जो हर दिन अपनी उपस्थिति दर्ज कराते हैं।",
     31: "महीने का समापन! नए संकल्प के साथ आने वाले दिनों में शत-प्रतिशत उपस्थिति का लक्ष्य रखें।"
 };
+// 🏖️ 1 से 31 तारीख के अवकाश (LEAVE) विशेष प्रेरणादायी विचार
+const leaveQuotes = {
+    1: "स्वास्थ्य और विश्राम भी जीवन की ऊर्जा को बनाए रखने के लिए आवश्यक है।",
+    2: "अवकाश के समय में भी स्वाध्याय की निरंतरता बनाए रखें।",
+    3: "समय का सदुपयोग करते हुए छूटे हुए अध्ययन को शीघ्र पूर्ण करें।",
+    4: "विश्राम के बाद नई ऊर्जा और उत्साह के साथ अध्ययन में पुनः जुटें।",
+    5: "अनुशासन प्रिय विद्यार्थी अवकाश के दिनों में भी अपनी दिनचर्या संतुलित रखते हैं।",
+    6: "घर पर रहकर भी अच्छी पुस्तकें पढ़ना ज्ञानवर्धन का श्रेष्ठ साधन है।",
+    7: "अवकाश अवधि में भी स्वाध्याय को अपना सबसे अच्छा मित्र बनाएं।",
+    8: "स्वास्थ्य लाभ लें और विद्यालय लौटने पर पूरी लगन से पढ़ाई करें।",
+    9: "समय अनमोल है, अवकाश के दौरान भी कुछ नया सीखने का प्रयास करें।",
+    10: "दैनिक अभ्यास से ही ज्ञान स्थिर रहता है, घर पर निरंतर दोहराव करें।",
+    11: "विश्राम के उपरांत दोगुनी ऊर्जा से विद्यालय में अपनी उपस्थिति दर्ज कराएं।",
+    12: "अवकाश का सदुपयोग स्वाध्याय और रचनात्मक कार्यों में करें।",
+    13: "नियमित अध्ययन की आदत कभी न छोड़ें, चाहे विद्यालय में हों या घर पर।",
+    14: "ज्ञानार्जन एक सतत प्रक्रिया है, जो घर पर भी निरंतर चलती रहनी चाहिए।",
+    15: "शीघ्र स्वस्थ होकर विद्यालय आएं, आपकी शिक्षा हमारे लिए सर्वोपरि है।",
+    16: "समय का उचित प्रबंधन ही विद्यार्थी को हमेशा आगे रखता है।",
+    17: "अवकाश के उपरांत अपने सहपाठियों और शिक्षकों से संपर्क कर पाठ्य सामग्री पूरी करें।",
+    18: "स्वास्थ्य की देखभाल पहली प्राथमिकता है, पूर्ण स्वस्थ होकर अध्ययन में जुटें।",
+    19: "घर पर रहकर भी विद्यालय के गृहकार्य और पाठों की पुनरावृत्ति करें।",
+    20: "संस्कार और अनुशासन अवकाश के दिनों में भी विद्यार्थी के आचरण में दिखते हैं।",
+    21: "विश्राम के क्षणों में अपने लक्ष्यों और योजनाओं पर विचार करें।",
+    22: "स्वाध्याय से आत्मविश्वास बढ़ता है, अवकाश का सदुपयोग करें।",
+    23: "अपने स्वास्थ्य का ध्यान रखें और विद्यालय से निरंतर जुड़े रहें।",
+    24: "समय का सम्मान करने वाला विद्यार्थी हर परिस्थिति में आगे रहता है।",
+    25: "अवकाश के दिनों में की गई पढ़ाई परीक्षा के समय अत्यधिक सहायक सिद्ध होती है।",
+    26: "शुभकामनाएं कि आप शीघ्र पुनः विद्यालय में अपनी उपस्थिति दर्ज कराएं।",
+    27: "सकारात्मक सोच और स्वाध्याय से हर दिन को उपयोगी बनाएं।",
+    28: "अनुशासन और नियमबद्धता विद्यार्थी जीवन का स्थायी आभूषण है।",
+    29: "विश्राम पूर्ण कर पुनः नई उमंग के साथ अपनी कक्षा में लौटें।",
+    30: "सदा सीखते रहने की ललक ही आपको सर्वश्रेष्ठ बनाती है।",
+    31: "माह के अंत में नए संकल्प लें कि आगामी माह में शत-प्रतिशत उपस्थिति रहेगी।"
+};
 // 🛡️ सुरक्षित और साफ टेक्स्ट निष्कर्षण
 function safePdfText(str, fallback = 'N/A') {
     if (!str || str === 'undefined' || str === 'null') return fallback;
@@ -1306,24 +1340,24 @@ async function processQueue() {
                         console.error("❌ Teacher PDF बनाने/भेजने में त्रुटि:", pErr.message);
                     }
                 }
-                    // 🎯 D2. TEACHER & STUDENT LIVE ATTENDANCE (TEXT + SWARA AI VOICE)
-                else if (item.type === 'ATTENDANCE_ALERT' || item.type === 'STUDENT_ATTENDANCE' || item.type === 'TEACHER_ATTENDANCE') {
-                    if (item.message && item.message.trim().length > 0) {
-                        await sock.sendMessage(jid, { text: item.message });
-                        await new Promise(res => setTimeout(res, 1200));
-                    }
+                 // 🎯 D2. TEACHER, STUDENT ATTENDANCE & ONLINE PAYMENT ALERT (TEXT + SWARA AI VOICE)
+else if (item.type === 'ATTENDANCE_ALERT' || item.type === 'STUDENT_ATTENDANCE' || item.type === 'TEACHER_ATTENDANCE' || item.type === 'ADMIN_PAYMENT_NOTIFICATION' || item.action === 'ONLINE_PAYMENT_ALERT') {
+    if (item.message && item.message.trim().length > 0) {
+        await sock.sendMessage(jid, { text: item.message });
+        await new Promise(res => setTimeout(res, 1200));
+    }
 
-                    if (item.voiceText && item.voiceText.trim().length > 0) {
-                        const audioBuffer = await generateHindiVoiceNote(item.voiceText);
-                        if (audioBuffer) {
-                            await sock.sendMessage(jid, { 
-                                audio: audioBuffer, 
-                                mimetype: 'audio/ogg; codecs=opus', 
-                                ptt: true 
-                            });
-                        }
-                    }
-                }
+    if (item.voiceText && item.voiceText.trim().length > 0) {
+        const audioBuffer = await generateHindiVoiceNote(item.voiceText);
+        if (audioBuffer) {
+            await sock.sendMessage(jid, { 
+                audio: audioBuffer, 
+                mimetype: 'audio/ogg; codecs=opus', 
+                ptt: true 
+            });
+        }
+    }
+}
 
 // 🎯 E. BROADCAST (VOICE / PDF / TEXT) — [NATIONAL LEVEL STABLE & DYNAMIC ENGINE]
                 else {
@@ -1604,8 +1638,10 @@ app.post('/send-attendance', async (req, res) => {
                 voiceScriptText = `नमस्ते! आदरणीय ${name} जी, जे आर डी पब्लिक स्कूल मरुई में आज आपकी उपस्थिति सफलतापूर्वक दर्ज कर ली गई है। ${todayInQuote} धन्यवाद!`;
             }
         } else {
-            // 🎓 छात्र उपस्थिति एवं अनुपस्थिति संदेश इंजन (Only JRD Public School & Clean Voice Ending)
-            const isAbsent = status.toLowerCase() === 'absent' || status.toLowerCase() === 'a' || status === 'अनुपस्थित';
+// 🎓 छात्र उपस्थिति, अनुपस्थिति एवं अवकाश संदेश इंजन
+            const cleanSt = status.toLowerCase();
+            const isAbsent = cleanSt === 'absent' || cleanSt === 'a' || cleanSt === 'अनुपस्थित';
+            const isLeave  = cleanSt === 'leave' || cleanSt === 'l' || cleanSt === 'अवकाश';
             
             // क्लास से फालतू शब्द साफ करना (ताकि "कक्षा: Class 9" जैसी पुनरावृत्ति न हो)
             const cleanClass = String(className || '')
@@ -1616,6 +1652,7 @@ app.post('/send-attendance', async (req, res) => {
 
             const todayStudentQuote = (typeof studentQuotes !== 'undefined' && studentQuotes[dayOfMonth]) ? studentQuotes[dayOfMonth] : "परिश्रम ही सफलता की असली कुंजी है।";
             const todayAbsentQuote = (typeof absentQuotes !== 'undefined' && absentQuotes[dayOfMonth]) ? absentQuotes[dayOfMonth] : "नियमितता ही सफलता की नींव है, एक भी दिन का अभाव प्रगति को धीमा कर देता है।";
+            const todayLeaveQuote = (typeof leaveQuotes !== 'undefined' && leaveQuotes[dayOfMonth]) ? leaveQuotes[dayOfMonth] : "स्वास्थ्य और विश्राम भी जीवन की ऊर्जा को बनाए रखने के लिए आवश्यक है।";
 
             if (isAbsent) {
                 // 🔴 अनुपस्थित (ABSENT)
@@ -1638,6 +1675,27 @@ app.post('/send-attendance', async (req, res) => {
                               `– JRD Management`;
 
                 voiceScriptText = `आदरणीय अभिभावक जी, सादर प्रणाम। जे आर डी पब्लिक स्कूल से सूचित किया जाता है कि आपके प्रिय पाल्य ${name}, कक्षा ${cleanClass}, आज विद्यालय में अनुपस्थित हैं। आज का अनुशासन विचार: ${todayAbsentQuote}। कृपया विद्यालय न आने का उचित कारण सूचित करने का कष्ट करें। धन्यवाद!`;
+
+            } else if (isLeave) {
+                // 🏖️ अवकाश (LEAVE) 
+                messageText = `🏫 *J.R.D. PUBLIC SCHOOL, मरुई*\n` +
+                              `📅 *दिनांक:* ${todayStr}\n` +
+                              `━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                              `🏖️ *दैनिक अवकाश सूचना (LEAVE)*\n\n` +
+                              `आदरणीय अभिभावक जी,\n` +
+                              `सादर प्रणाम।\n\n` +
+                              `आपको सादर सूचित किया जाता है कि आपके प्रिय पाल्य:\n\n` +
+                              `👤 *विद्यार्थी:* *${name}*\n` +
+                              `📚 *कक्षा:* ${cleanClass}\n` +
+                              `📊 *स्थिति:* स्वीकृत अवकाश (LEAVE) 🏖️\n\n` +
+                              `का आज का अवकाश प्रार्थना-पत्र विद्यालय रिकॉर्ड में दर्ज/स्वीकृत कर लिया गया है।\n\n` +
+                              `📖 *आज का विचार:*\n` +
+                              `_"${todayLeaveQuote}"_\n\n` +
+                              `👉 _कृपया अवकाश अवधि में भी बच्चे के नियमित स्वाध्याय एवं गृहकार्य पर विशेष ध्यान दें।_\n` +
+                              `━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                              `– JRD Management`;
+
+                voiceScriptText = `आदरणीय अभिभावक जी, सादर प्रणाम। जे आर डी पब्लिक स्कूल मरुई द्वारा सूचित किया जाता है कि आपके प्रिय पाल्य ${name}, कक्षा ${cleanClass}, का आज का अवकाश विद्यालय रिकॉर्ड में दर्ज कर लिया गया है। आज का विचार: ${todayLeaveQuote}। कृपया अवकाश अवधि में भी बच्चे के स्वाध्याय पर ध्यान दें। धन्यवाद!`;
 
             } else {
                 // 🟢 उपस्थित (PRESENT)
