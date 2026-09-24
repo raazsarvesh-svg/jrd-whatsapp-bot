@@ -1341,7 +1341,7 @@ async function processQueue() {
                     }
                 }
                  // 🎯 D2. TEACHER, STUDENT ATTENDANCE & ONLINE PAYMENT ALERT (TEXT + SWARA AI VOICE)
-else if (item.type === 'ATTENDANCE_ALERT' || item.type === 'STUDENT_ATTENDANCE' || item.type === 'TEACHER_ATTENDANCE' || item.type === 'ADMIN_PAYMENT_NOTIFICATION' || item.action === 'ONLINE_PAYMENT_ALERT') {
+else if (item.type === 'ATTENDANCE_ALERT' || item.type === 'SUBJECT_MARKS_ALERT' || item.type === 'EXAM_ABSENT_ALERT' || item.type === 'STUDENT_ATTENDANCE' || item.type === 'TEACHER_ATTENDANCE' || item.type === 'ADMIN_PAYMENT_NOTIFICATION' || item.action === 'ONLINE_PAYMENT_ALERT') {
     if (item.message && item.message.trim().length > 0) {
         await sock.sendMessage(jid, { text: item.message });
         await new Promise(res => setTimeout(res, 1200));
