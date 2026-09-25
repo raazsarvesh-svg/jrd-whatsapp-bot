@@ -1494,29 +1494,36 @@ app.post('/enqueue-message', (req, res) => {
 app.post('/enqueue-bulk-marks', (req, res) => {
     try {
         const list = req.body?.students || [];
+        console.log(`📥 [Bulk Route Hit] Total items received: ${list.length}`);
+
         if (!Array.isArray(list) || list.length === 0) {
             return res.status(400).json({ status: 'ERROR', message: 'No students data found' });
         }
 
         let queuedCount = 0;
         list.forEach(item => {
-            const targetPhone = item.phone || item.number;
-            if (!targetPhone) return;
+            const rawPhone = item.phone || item.number || item.mobile;
+            if (!rawPhone) return;
+
+            // 🎯 Phone number ko strictly clean karein aur 91 ensure karein
+            let formattedNumber = rawPhone.toString().replace(/[^0-9]/g, '');
+            if (formattedNumber.length === 10) formattedNumber = '91' + formattedNumber;
 
             messageQueue.push({
-                number: targetPhone.toString(),
+                number: formattedNumber,
                 message: item.message || "",
                 voiceText: item.voiceText || "",
-                type: item.type || "ATTENDANCE_ALERT",
-                name: item.name || ""
+                type: item.type || "SUBJECT_MARKS_ALERT",
+                name: item.name || item.studentName || ""
             });
             queuedCount++;
         });
 
+        console.log(`✅ [Bulk Marks Engine] ${queuedCount} alerts queued. Total Queue Length: ${messageQueue.length}`);
+
         // Background asynchronous queue start
         processQueue();
 
-        console.log(`✅ [Bulk Marks Engine] ${queuedCount} alerts safely queued for WhatsApp delivery.`);
         return res.status(200).json({ 
             status: 'SUCCESS', 
             queued: queuedCount, 
@@ -1527,7 +1534,6 @@ app.post('/enqueue-bulk-marks', (req, res) => {
         return res.status(500).json({ status: 'ERROR', message: err.message });
     }
 });
-
 app.post('/send-whatsapp', async (req, res) => {
     const body = req.body || {};
     const targetPhone = body.number || body.phone || body.mobile;
