@@ -1490,6 +1490,43 @@ app.post('/enqueue-message', (req, res) => {
 
     return res.status(200).json({ status: 'queued', queue_length: messageQueue.length });
 });
+// 🚀 ENTERPRISE BULK QUEUE: Poori class ka marks data ek sath lekar memory queue me daalega
+app.post('/enqueue-bulk-marks', (req, res) => {
+    try {
+        const list = req.body?.students || [];
+        if (!Array.isArray(list) || list.length === 0) {
+            return res.status(400).json({ status: 'ERROR', message: 'No students data found' });
+        }
+
+        let queuedCount = 0;
+        list.forEach(item => {
+            const targetPhone = item.phone || item.number;
+            if (!targetPhone) return;
+
+            messageQueue.push({
+                number: targetPhone.toString(),
+                message: item.message || "",
+                voiceText: item.voiceText || "",
+                type: item.type || "ATTENDANCE_ALERT",
+                name: item.name || ""
+            });
+            queuedCount++;
+        });
+
+        // Background asynchronous queue start
+        processQueue();
+
+        console.log(`✅ [Bulk Marks Engine] ${queuedCount} alerts safely queued for WhatsApp delivery.`);
+        return res.status(200).json({ 
+            status: 'SUCCESS', 
+            queued: queuedCount, 
+            total_pending: messageQueue.length 
+        });
+    } catch (err) {
+        console.error('❌ Bulk Marks Queue Error:', err.message);
+        return res.status(500).json({ status: 'ERROR', message: err.message });
+    }
+});
 
 app.post('/send-whatsapp', async (req, res) => {
     const body = req.body || {};
